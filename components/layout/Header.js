@@ -2,6 +2,7 @@ import { useContext } from "react";
 import Link from "next/link";
 import styled from "@emotion/styled";
 import { css } from "@emotion/react";
+import Router from "next/router";
 
 import Search from "../UI/Search";
 import Navigation from "./Navigation";
@@ -69,7 +70,13 @@ const Header = () => {
                 Hello: {user.displayName}
               </p>
 
-              <Button bgColor="true" onClick={() => firebase.logOut()}>
+              <Button
+                bgColor="true"
+                onClick={() => {
+                  firebase.logOut();
+                  Router.push("/");
+                }}
+              >
                 Log Out
               </Button>
             </div>

@@ -23,11 +23,11 @@ const LogIn = () => {
     handleChange,
     handleSubmit,
     handleBlur,
-  } = useValidation(INITIAL_STATE, validateLogIn, LogIn);
+  } = useValidation(INITIAL_STATE, validateLogIn, login);
 
   const { email, password } = values;
 
-  async function LogIn() {
+  async function login() {
     try {
       const user = await firebase.login(email, password);
       console.log(user);
