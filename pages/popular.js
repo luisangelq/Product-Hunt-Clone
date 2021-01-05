@@ -5,14 +5,14 @@ const Heading = styled.h1`
   color: blue;
 `;
 
-const Home = () => {
+const Popular = () => {
   return (
     <div>
       <Layout>
-        <Heading>Home</Heading>
+        <Heading>Popular</Heading>
       </Layout>
     </div>
   );
 };
 
-export default Home;
+export default Popular;
