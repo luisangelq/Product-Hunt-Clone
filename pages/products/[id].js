@@ -48,6 +48,12 @@ const CommentBox = styled.li`
   }
 `;
 
+const Owner = styled.p`
+  color: #da552f;
+  text-transform: uppercase;
+  font-weight: bold;
+`;
+
 const Likes = styled.p`
   margin-top: 5rem;
   text-align: center;
@@ -55,7 +61,7 @@ const Likes = styled.p`
 
 const Product = () => {
   const [product, setProduct] = useState({});
-  const [update, setUpdate] = useState(false);
+  const [consultDB, setConsultDB] = useState(true);
   const [error, setError] = useState(false);
   const [comment, setComment] = useState({});
 
@@ -68,9 +74,26 @@ const Product = () => {
   //firebase context
   const { firebase, user } = useContext(FirebaseContext);
 
+  useEffect(() => {
+    if (id && consultDB) {
+      const getProduct = async () => {
+        const queryProduct = await firebase.db.collection("products").doc(id);
+        const product = await queryProduct.get();
+
+        if (product.exists) {
+          setProduct(product.data());
+          setConsultDB(false);
+        } else {
+          setError(true);
+          setConsultDB(false);
+        }
+      };
+      getProduct();
+    }
+  }, [id, consultDB]);
+
   //Admin and validate votes
   const voteProduct = () => {
-    setUpdate(true);
     if (!user) {
       return router.push("/login");
     }
@@ -93,24 +116,9 @@ const Product = () => {
       votes: newTotalVotes,
       newHaveVoted,
     });
+
+    setConsultDB(true);
   };
-
-  useEffect(() => {
-    if (id) {
-      const getProduct = async () => {
-        const queryProduct = await firebase.db.collection("products").doc(id);
-        const product = await queryProduct.get();
-
-        if (product.exists) {
-          setProduct(product.data());
-        } else {
-          setError(true);
-        }
-      };
-      getProduct();
-      setUpdate(false);
-    }
-  }, [id, update]);
 
   const {
     name,
@@ -156,6 +164,34 @@ const Product = () => {
       ...product,
       comments: newComments,
     });
+
+    setConsultDB(true);
+  };
+
+  //Identify if comment is from creator
+  const isCreator = (id) => {
+    if (creator.id === id) {
+      return true;
+    }
+  };
+
+  //Delete only by owner
+  const canDelete = () => {
+    if (!user) return false;
+    if (creator.id === user.uid) return true;
+  };
+
+  const deleteProduct = async () => {
+    if (!user) return router.push("/login");
+    if (creator.id !== user.uid) return router.push("/");
+
+    try {
+      await firebase.db.collection("products").doc(id).delete();
+      router.push("/")
+      
+    } catch (error) {
+      console.log("We could't delete it",error);
+    }
   };
   return (
     <Layout>
@@ -211,6 +247,8 @@ const Product = () => {
                       <p>
                         Writted By: <span>{comment.userName}</span>{" "}
                       </p>
+
+                      {isCreator(comment.userId) && <Owner>Owner</Owner>}
                     </CommentBox>
                   ))}
                 </ul>
@@ -229,6 +267,15 @@ const Product = () => {
               {user && <Button onClick={voteProduct}>Like</Button>}
             </aside>
           </ProductContent>
+
+          {canDelete() && (
+            <Button
+              onClick={deleteProduct}
+              style={{ backgroundColor: "#DC2727" }}
+            >
+              Delete Product
+            </Button>
+          )}
         </Content>
       )}
     </Layout>

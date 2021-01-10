@@ -1,5 +1,7 @@
+import { useState } from "react";
 import styled from "@emotion/styled";
 import { css } from "@emotion/react";
+import Router from "next/router";
 
 const InputText = styled.input`
   border: 1px solid var(--gray3);
@@ -24,17 +26,38 @@ const InputSubmit = styled.button`
   &:hover {
     cursor: pointer;
   }
-`
+`;
 
 const Search = () => {
+
+  const [searching, setSearching] = useState("");
+
+  const searchProduct = (e) => {
+    e.preventDefault();
+
+    if(searching.trim() === "") return;
+
+    //asi se pasa al componente y a la url
+    Router.push({
+      pathname: "/search",
+      query: {q : searching}
+    })
+
+  }
+
   return (
     <form
       css={css`
         position: relative;
       `}
+      onSubmit={searchProduct}
     >
-      <InputText type="text" placeholder="Search Products"/>
-      <InputSubmit type="submit"></InputSubmit>
+      <InputText
+        type="text"
+        placeholder="Search Products"
+        onChange={(e) => setSearching(e.target.value)}
+      />
+      <InputSubmit type="submit">Buscar</InputSubmit>
     </form>
   );
 };

@@ -1,43 +1,11 @@
-import React, { useEffect, useState, useContext } from "react";
 import Layout from "../components/layout/Layout";
-import { FirebaseContext } from "../firebase/index";
-
 import ProductDetails from "../components/layout/ProductDetails";
 import Loading from "../components/UI/Loading";
+import useProducts from "../hooks/useProducts";
 
 const Home = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const { firebase } = useContext(FirebaseContext);
-
-  useEffect(() => {
-    const getProducts = () => {
-      setLoading(true);
-      //metodo para traer todo el registro de firebase
-      firebase.db
-        .collection("products")
-        .orderBy("created", "desc")
-        .onSnapshot(driveSnapshot);
-      
-        
-    };
-    getProducts();
-    
-  }, []);
-
-  //metodo para traer todo el registro de firebase
-  function driveSnapshot(snapshot) {
-    const products = snapshot.docs.map((doc) => {
-      return {
-        id: doc.id,
-        ...doc.data(),
-      };
-    });
-
-    setProducts(products);
-    setLoading(false);
-  }
+  
+  const { products, loading } = useProducts("created");
 
   return (
     <div>
