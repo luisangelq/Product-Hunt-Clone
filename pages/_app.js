@@ -4,7 +4,6 @@ import authUser from "../hooks/useAuth";
 
 function MyApp({ Component, pageProps }) {
   const user = authUser();
-  console.log(user);
 
   return (
     <FirebaseContext.Provider

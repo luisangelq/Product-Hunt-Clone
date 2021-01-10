@@ -37,7 +37,7 @@ export const InputSubmit = styled.input`
   background-color: var(--orange);
   width: 100%;
   padding: 1.5rem;
-  margin-top: 5rem;
+  margin: 3rem 0;
   text-align: center;
   color: white;
   font-size: 1.8rem;
